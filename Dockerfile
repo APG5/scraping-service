@@ -15,6 +15,13 @@ RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+# Get Chrome version
+RUN google-chrome --version | awk '{ print $3 }' > /chrome_version.txt
+
+# Install chromedriver compatible with the current Chrome version
+RUN CHROME_VERSION=$(cat /chrome_version.txt) && \
+    pip install chromedriver-binary==$CHROME_VERSION
+
 # Copy local code to the container image.
 ENV APP_HOME /app
 WORKDIR $APP_HOME
